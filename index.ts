@@ -58,10 +58,10 @@ class App {
 			resultSet: true
 		};
 		this.ora.getConnection(this.connAtt)
-			.then(this.ora.query.bind(this, 'select num_ele_int from cad_topo_int where cod_situ_int <> :situ and rownum <= :rn', ['RM', 20], opt))
+			.then(this.ora.query.bind(this.ora, 'select num_ele_int from cad_topo_int where cod_situ_int <> :situ and rownum <= :rn', ['RM', 20], opt))
 			.then(this.ora.getAllRows)
 			.then(console.log)
-			.catch(console.error);
+			.catch(console.error.bind(console,'ERROR:'));
 	}
 }
 
