@@ -63,14 +63,42 @@ declare module 'oracledb' {
 		/**
 		 * Execute method on Connection class.
 		 * @param	{string} sql SQL Statement.
-		 * @param	{Object|Array<any>} Binds Binds Object/Array (optional)
-		 * @param	{IExecuteOptions} options Options object (optional)
+		 * @param	{Object|Array<any>} Binds Binds Object/Array
+		 * @param	{IExecuteOptions} options Options object
 		 * @param	{Function} callback Callback function to receive the result.
 		 */
 		execute(sql: string,
-			binds?: Object | Array<any>,
-			options?: IExecuteOptions,
-			callback?: (err: any, value: IExecuteReturn) => void): void;
+			binds: Object | Array<any>,
+			options: IExecuteOptions,
+			callback: (err: any, value: IExecuteReturn) => void): void;
+
+		/**
+		 * Execute method on Connection class.
+		 * @param	{string} sql SQL Statement.
+		 * @param	{Object|Array<any>} Binds Binds Object/Array
+		 * @param	{Function} callback Callback function to receive the result.
+		 */
+		execute(sql: string,
+			binds: Object | Array<any>,
+			callback: (err: any, value: IExecuteReturn) => void): void;
+
+		/**
+		 * Execute method on Connection class.
+		 * @param	{string} sql SQL Statement.
+		 * @param	{IExecuteOptions} options Options object
+		 * @param	{Function} callback Callback function to receive the result.
+		 */
+		execute(sql: string,
+			options: IExecuteOptions,
+			callback: (err: any, value: IExecuteReturn) => void): void;
+
+		/**
+		 * Execute method on Connection class.
+		 * @param	{string} sql SQL Statement.
+		 * @param	{Function} callback Callback function to receive the result.
+		 */
+		execute(sql: string,
+			callback: (err: any, value: IExecuteReturn) => void): void;
 
 		/**
 		 * Release method on Connection class.
