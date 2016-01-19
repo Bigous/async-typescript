@@ -22,7 +22,6 @@ class OraclePromisses {
 
 	getAllRows(exeRet: IExecuteReturn): Promise<Array<Array<any>> | Array<Object>> {
 		return new Promise<Array<Array<any>> | Array<Object>>((res, rej) => {
-			console.log('getRows', exeRet);
 			if (exeRet.rows) {
 				res(exeRet.rows);
 			} else {
@@ -43,6 +42,20 @@ class OraclePromisses {
 			}
 		});
 	}
+
+	releaseConnection(connection: IConnection): Promise<void> {
+		return new Promise<void>((res, rej) => {
+			if (connection == null) {
+				// Nothing to release
+				return res();
+			} else {
+				// Lets release...
+				connection.release((err) => {
+					return err ? rej(err) : res();
+				});
+			}
+		});
+	}
 }
 
 class App {
@@ -58,10 +71,23 @@ class App {
 			resultSet: true
 		};
 		this.ora.getConnection(this.connAtt)
-			.then(this.ora.query.bind(this.ora, 'select num_ele_int from cad_topo_int where cod_situ_int <> :situ and rownum <= :rn', ['RM', 20], opt))
-			.then(this.ora.getAllRows)
-			.then(console.log)
-			.catch(console.error.bind(console,'ERROR:'));
+			.then(conn => {
+				// Connection is tied to this then execution...
+				// It will be released at the end of this chain.
+				return this.ora.query('select num_ele_int from cad_topo_int where cod_situ_int <> :situ and rownum <= :rn', { situ: 'RM', rn: 20 }, opt, conn)
+					.then(this.ora.getAllRows)
+					.then(console.log)
+					// any exception or rejection wil be catch here
+					.catch(console.log.bind(console))
+					// releasing the connection - exceptions during this process are not catched by the catch above...
+					// We have 3 options so...
+					//  1. Do nothing and let the error be thown.
+					//  2. Catch it after this then
+					//  3. Return the promisse so the father promisse may decide what to do. <- choosen option
+					.then(this.ora.releaseConnection.bind(this.ora, conn));
+			})
+			// another catch - will catch problems during connection aquiring (getConnection) and release (releaseConnection from the internal promisse of prior then which was returned);
+			.catch(console.log.bind(console));
 	}
 }
 
